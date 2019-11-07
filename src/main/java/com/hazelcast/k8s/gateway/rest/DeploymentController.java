@@ -5,6 +5,7 @@ import com.hazelcast.k8s.gateway.dto.ListDeploymentRequest;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentResponse;
 import com.hazelcast.k8s.gateway.error.GatewayException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,18 @@ import javax.validation.Valid;
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class DeploymentController {
 
+    @Value("${dev.gateway.default.list.limit}")
+    private int listLimit;
+
     @Autowired
     DeploymentService deploymentService;
 
     @GetMapping(produces = {"application/hal+json"})
-    ListDeploymentResponse getDeployments(@RequestBody @Valid ListDeploymentRequest req) throws GatewayException {
+    @ResponseBody ListDeploymentResponse
+    getDeployments(ListDeploymentRequest req) throws GatewayException {
+        if (req.limit == null) {
+            req.limit = listLimit;
+        }
         return deploymentService.listDeployments(req);
     }
 

@@ -1,5 +1,6 @@
 package com.hazelcast.k8s.gateway.dto;
 
+
 public class ListDeploymentRequest {
 
     public String _continue = null;
@@ -11,6 +12,80 @@ public class ListDeploymentRequest {
     public Integer timeoutSeconds = null;
     public Boolean watch = null;
     public Boolean include = null;
+
+    public ListDeploymentRequest(){}
+
+    public String get_continue() {
+        return _continue;
+    }
+
+    public void set_continue(String _continue) {
+        this._continue = _continue;
+    }
+
+    public String getFieldSelector() {
+        return fieldSelector;
+    }
+
+    public void setFieldSelector(String fieldSelector) {
+        this.fieldSelector = fieldSelector;
+    }
+
+    public String getLabelSelector() {
+        return labelSelector;
+    }
+
+    public void setLabelSelector(String labelSelector) {
+        this.labelSelector = labelSelector;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public String getPretty() {
+        return pretty;
+    }
+
+    public void setPretty(String pretty) {
+        this.pretty = pretty;
+    }
+
+    public String getResourceVersion() {
+        return resourceVersion;
+    }
+
+    public void setResourceVersion(String resourceVersion) {
+        this.resourceVersion = resourceVersion;
+    }
+
+    public Integer getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(Integer timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public Boolean getWatch() {
+        return watch;
+    }
+
+    public void setWatch(Boolean watch) {
+        this.watch = watch;
+    }
+
+    public Boolean getInclude() {
+        return include;
+    }
+
+    public void setInclude(Boolean include) {
+        this.include = include;
+    }
 
     @Override
     public String toString() {
@@ -26,4 +101,6 @@ public class ListDeploymentRequest {
                 ", include=" + include +
                 '}';
     }
+
+
 }

@@ -11,10 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 @Configuration
 public class K8sConfig {
@@ -25,8 +22,8 @@ public class K8sConfig {
     @Bean
     AppsV1Api initClient() throws IOException {
         try {
-            InputStream inputStream = KubeConfigFileClient.class.getResourceAsStream(kubeConfigPath);
-            ApiClient client = ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new InputStreamReader(inputStream))).build();
+            FileReader reader = new FileReader(kubeConfigPath);
+            ApiClient client = ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(reader)).build();
             io.kubernetes.client.Configuration.setDefaultApiClient(client);
             //Potentially we can populate more API facades into context, but for the sake of simplicity lets skip it
             return new AppsV1Api();

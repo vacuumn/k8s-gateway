@@ -21,4 +21,8 @@ public class ListDeploymentResponse {
             )).collect(Collectors.toList());
         return new ListDeploymentResponse(deployments);
     }
+
+    public List<Deployment> getDeployments() {
+        return deployments;
+    }
 }
