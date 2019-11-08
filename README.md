@@ -110,12 +110,22 @@ Example: ``` curl -d 'PAYLOD_JSON_HERE' -H "Content-Type: application/json" -X P
 
 
 ## Design decisions and  further thoughts
+
+No UI implemented(sorry, JS folks)
+
 REST API was designed with Maturity Model in mind using Spring HATEOAS. 
 Resource(deployment) can be expanded to include possible actions like describe, edit(rollout), delete, etc.
 
 API Error handling using ExceptionHandler is used primarily to wrap k8s API client errors, but can be extended to enrich and detail error flows.
 
+Some of the DTO classes have public field access for the simplicity sake and to raise a question of idiomatic Java Beans and their properties access.
+
+JWT can be optionally used for authentication, but not required so to simplify the application bootstrap.
+
+Both unit and integration tests used while implementing solution, but not all corner case covered, for example conflicting deployment names, etc.
+
+For DB H2 is used. Here I used DB as a passive audit log for storing created deploys. Possibly we could cache all deployment data there to save k8s API calls.
+ 
 
 
-
- quick design schema will be a plus
+TODO: quick design schema will be a plus

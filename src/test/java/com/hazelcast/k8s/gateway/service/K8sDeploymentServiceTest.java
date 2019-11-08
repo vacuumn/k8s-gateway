@@ -5,27 +5,19 @@ import com.hazelcast.k8s.gateway.dto.Deployment;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentRequest;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentResponse;
 import com.hazelcast.k8s.gateway.error.GatewayException;
+import com.hazelcast.k8s.gateway.repository.DeploymentRepository;
 import io.kubernetes.client.ApiException;
 import io.kubernetes.client.apis.AppsV1Api;
 import io.kubernetes.client.models.*;
-import org.junit.Before;
-import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 class K8sDeploymentServiceTest {
@@ -46,7 +38,8 @@ class K8sDeploymentServiceTest {
     @BeforeEach
     public void init() {
         appsV1Api = mock(AppsV1Api.class, withSettings().verboseLogging());
-        service = new K8sDeploymentService(appsV1Api);
+        DeploymentRepository repository =  mock(DeploymentRepository.class);
+        service = new K8sDeploymentService(repository, appsV1Api);
     }
 
     @Test

@@ -6,9 +6,10 @@ import com.hazelcast.k8s.gateway.dto.Deployment;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentRequest;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentResponse;
 import com.hazelcast.k8s.gateway.error.GatewayException;
+import com.hazelcast.k8s.gateway.repository.DeploymentEntity;
+import com.hazelcast.k8s.gateway.repository.DeploymentRepository;
 import com.hazelcast.k8s.gateway.service.mappers.K8sDeploymentMapper;
 import io.kubernetes.client.ApiException;
-import io.kubernetes.client.apis.AppsApi;
 import io.kubernetes.client.apis.AppsV1Api;
 import io.kubernetes.client.models.V1Deployment;
 import io.kubernetes.client.models.V1DeploymentList;
@@ -25,9 +26,11 @@ public class K8sDeploymentService implements DeploymentService {
     private Logger log = LoggerFactory.getLogger("DeploymentService");
     private static final String DEFAULT_LABEL_KEY = "origin";
 
+    private final DeploymentRepository repository;
     private final AppsV1Api appsApi;
 
-    public K8sDeploymentService(@Autowired AppsV1Api appsApi) {
+    public K8sDeploymentService(DeploymentRepository repository, AppsV1Api appsApi) {
+        this.repository = repository;
         this.appsApi = appsApi;
     }
 
@@ -64,7 +67,13 @@ public class K8sDeploymentService implements DeploymentService {
             throw new GatewayException(ex, "createDeployment");
         }
         log.info("createDeployment response from API: deployment {} is in {} status", response.getMetadata().getName(), response.getStatus());
+
+        saveDeploymentToRepo(response, request);
         return ListDeploymentResponse.parseFrom(Collections.singletonList(response)).getDeployments().get(0);
+    }
+
+    private DeploymentEntity saveDeploymentToRepo(V1Deployment response, CreateDeploymentRequest request) {
+        return repository.save(new DeploymentEntity(response.getMetadata().getName(), request.deployment.getImages()));
     }
 
     private void putLabels(Deployment deployment) {
