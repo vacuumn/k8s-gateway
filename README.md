@@ -128,7 +128,7 @@ For DB H2 is used. Here I used DB as a passive audit log for storing created dep
  
 
 
-#Quick sequence diagram 
+## Quick sequence diagram 
 
-![Alt text](./diagram.svg)
+
 <img src="./diagram.svg">
