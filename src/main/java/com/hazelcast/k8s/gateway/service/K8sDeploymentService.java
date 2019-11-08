@@ -27,7 +27,6 @@ public class K8sDeploymentService implements DeploymentService {
 
     private final AppsV1Api appsApi;
 
-
     public K8sDeploymentService(@Autowired AppsV1Api appsApi) {
         this.appsApi = appsApi;
     }
