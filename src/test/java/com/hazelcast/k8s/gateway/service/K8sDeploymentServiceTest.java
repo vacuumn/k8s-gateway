@@ -38,7 +38,7 @@ class K8sDeploymentServiceTest {
     }
 
     @Test
-    void testListDeployments() throws ApiException {
+    void testListDeployments() throws ApiException, GatewayException {
         V1DeploymentList mockedResponse = new V1DeploymentList().items(Collections.singletonList(new V1Deployment()));
         when(appsV1Api.listDeploymentForAllNamespaces(any(), any(), anyBoolean(), any(), any(), any(), any(), any(), anyBoolean()))
                 .thenReturn(mockedResponse);

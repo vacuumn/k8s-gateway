@@ -2,6 +2,8 @@ package com.hazelcast.k8s.gateway;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.k8s.gateway.dto.CreateDeploymentRequest;
+import com.hazelcast.k8s.gateway.dto.Deployment;
 import com.hazelcast.k8s.gateway.dto.ListDeploymentRequest;
 import io.kubernetes.client.apis.AppsV1Api;
 import org.junit.jupiter.api.Test;
@@ -11,10 +13,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import java.util.Collections;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -62,6 +66,27 @@ class K8sGatewayApplicationTests {
             appsApi.getApiClient().setBasePath(basePath);
         }
     }
+
+
+    @Test
+    void createDeploymentsAndListItShouldReturnOK() throws Exception {
+        CreateDeploymentRequest request = new CreateDeploymentRequest();
+        request.namespace = "default";
+
+        request.deployment = new Deployment("testdeploy3", Collections.singletonList("nginx:1.7.9"), null);
+        mockMvc.perform(post("/v1/deployments")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        MvcResult mvcResult = mockMvc.perform(get("/v1/deployments")
+                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+    }
+
 
 
 
