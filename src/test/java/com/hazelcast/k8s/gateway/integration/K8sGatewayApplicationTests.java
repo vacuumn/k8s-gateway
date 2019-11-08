@@ -1,4 +1,4 @@
-package com.hazelcast.k8s.gateway;
+package com.hazelcast.k8s.gateway.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,19 +73,25 @@ class K8sGatewayApplicationTests {
         CreateDeploymentRequest request = new CreateDeploymentRequest();
         request.namespace = "default";
 
-        request.deployment = new Deployment("testdeploy3", Collections.singletonList("nginx:1.7.9"), null);
-        mockMvc.perform(post("/v1/deployments")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType("application/json"))
-                .andExpect(status().isOk());
+        try{
+            request.deployment = new Deployment("testdeploy", Collections.singletonList("nginx:1.7.9"), null);
+            MvcResult createResult = mockMvc.perform(post("/v1/deployments")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType("application/json"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            System.out.println(createResult.getResponse().getContentAsString());
 
-        MvcResult mvcResult = mockMvc.perform(get("/v1/deployments")
-                .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andReturn();
+            MvcResult listResult = mockMvc.perform(get("/v1/deployments")
+                    .contentType("application/json"))
+                    .andExpect(status().isOk())
+                    .andReturn();
 
-        System.out.println(mvcResult.getResponse().getContentAsString());
-    }
+            System.out.println(listResult.getResponse().getContentAsString());
+        } finally {
+            appsApi.deleteNamespacedDeployment(request.deployment.getName(), request.namespace, null, null, null,null , null, null);
+        }
+   }
 
 
 

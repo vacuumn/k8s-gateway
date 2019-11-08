@@ -10,7 +10,7 @@ public class CreateDeploymentRequest {
     public @Valid Deployment deployment;
     public String pretty;
     public String dryRun;
-    public boolean includeUninitialized;
+    public Boolean includeUninitialized;
 
     public Deployment getDeployment() {
         return deployment;
