@@ -1,6 +1,7 @@
 package com.hazelcast.k8s.gateway.dto;
 
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Deployment {
     private String name;
     @NotEmpty(message = "At least one image should be provided")
     private List<String> images;
+    @Nullable
     private Map<String, String> labels;
 
     public Deployment(String name, List<String> images, Map<String, String> labels) {

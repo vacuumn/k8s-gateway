@@ -15,7 +15,6 @@ import io.kubernetes.client.models.V1Deployment;
 import io.kubernetes.client.models.V1DeploymentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -36,9 +35,9 @@ public class K8sDeploymentService implements DeploymentService {
 
     public ListDeploymentResponse listDeployments(ListDeploymentRequest request) throws GatewayException {
         log.info("listDeployment request {} goes to API...", request);
-        V1DeploymentList response = null;
+        V1DeploymentList deploymentList = null;
         try {
-            response = appsApi.listDeploymentForAllNamespaces(request._continue,
+            deploymentList = appsApi.listDeploymentForAllNamespaces(request._continue,
                     request.fieldSelector, request.include, request.labelSelector, request.limit, request.pretty,
                     request.resourceVersion, request.timeoutSeconds, request.watch);
 
@@ -49,15 +48,15 @@ public class K8sDeploymentService implements DeploymentService {
             log.error("Failed to list deployments", ex);
             throw new GatewayException(ex, "listDeployments");
         }
-        log.info("listDeployment response from API: {} deployment(s)", response.getItems().size());
-        return ListDeploymentResponse.parseFrom(response.getItems());
+        log.info("listDeployment response from API: {} deployment(s)", deploymentList.getItems().size());
+        return ListDeploymentResponse.parseFrom(deploymentList.getItems());
     }
 
     public Deployment createDeployment(CreateDeploymentRequest request) throws GatewayException {
-        putLabels(request.deployment);
-        V1Deployment response = null;
+        putGatewayLabels(request.deployment);
+        V1Deployment v1Deployment = null;
         try {
-            response = appsApi.createNamespacedDeployment(request.namespace, K8sDeploymentMapper.fromDeployment(request.deployment),
+            v1Deployment = appsApi.createNamespacedDeployment(request.namespace, K8sDeploymentMapper.fromDeployment(request.deployment),
                     request.includeUninitialized, request.pretty, request.dryRun);
         } catch (ApiException e) {
             log.error("API operation failed to create deployment", e);
@@ -66,17 +65,17 @@ public class K8sDeploymentService implements DeploymentService {
             log.error("Failed to create deployment", ex);
             throw new GatewayException(ex, "createDeployment");
         }
-        log.info("createDeployment response from API: deployment {} is in {} status", response.getMetadata().getName(), response.getStatus());
+        log.info("createDeployment v1Deployment from API: deployment {} is in {} status", v1Deployment.getMetadata().getName(), v1Deployment.getStatus());
 
-        saveDeploymentToRepo(response, request);
-        return ListDeploymentResponse.parseFrom(Collections.singletonList(response)).getDeployments().get(0);
+        saveDeploymentToRepo(v1Deployment, request);
+        return ListDeploymentResponse.parseFrom(Collections.singletonList(v1Deployment)).getDeployments().get(0);
     }
 
     private DeploymentEntity saveDeploymentToRepo(V1Deployment response, CreateDeploymentRequest request) {
         return repository.save(new DeploymentEntity(response.getMetadata().getName(), request.deployment.getImages()));
     }
 
-    private void putLabels(Deployment deployment) {
+    private void putGatewayLabels(Deployment deployment) {
         if (deployment.getLabels() == null) {
             deployment.setLabels(new HashMap<>());
         }

@@ -1,6 +1,9 @@
 package com.hazelcast.k8s.gateway.dto;
 
 
+/**
+ * DTO for holding list deployments params, more details in README.MD (TODO: add fields description here as well)
+ */
 public class ListDeploymentRequest {
 
     public String _continue = null;
