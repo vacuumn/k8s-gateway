@@ -128,4 +128,7 @@ For DB H2 is used. Here I used DB as a passive audit log for storing created dep
  
 
 
-TODO: quick design schema will be a plus
+#Quick sequence diagram 
+
+![Alt text](./diagram.svg)
+<img src="./diagram.svg">
